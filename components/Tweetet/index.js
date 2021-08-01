@@ -1,6 +1,7 @@
 import Avatar from "components/Avatar"
+import { useRouter } from "next/router"
 import useTimeAgo from "hooks/useTimeAgo"
-
+import Link from "next/link"
 export default function Tweetet({
   avatar,
   userName,
@@ -10,18 +11,25 @@ export default function Tweetet({
   id,
 }) {
   const timeago = useTimeAgo(createdAt)
+  const router = useRouter()
+  const handleArticleClick = (e) => {
+    e.preventDefault()
+    router.push("/status/[id]", `/status/${id}`)
+  }
   return (
     <>
-      <article>
+      <article onClick={handleArticleClick}>
         <div>
           <Avatar alt={userName} src={avatar} />
         </div>
         <section>
           <header>
+            <Link href={`/status/[id]`} as={`/status/${id}`}>
+              <a>
+                <time>{timeago}</time>
+              </a>
+            </Link>
             <h5>Mariantonieta Chacon</h5>
-            <h5>{userName}</h5>
-            <span>·</span>
-            <date>{timeago}</date>
           </header>
           <p>{content}</p>
           {img && <img src={img} />}
@@ -33,8 +41,16 @@ export default function Tweetet({
           display: flex;
           padding: 10px 15px;
         }
+        article:hover {
+          background: #f5f8fa;
+          cursor: pointer;
+        }
         div {
           padding-right: 10px;
+        }
+        h5 {
+          margin-top: -15px;
+          margin-left: 10px;
         }
         img {
           border-radius: 10px;
@@ -49,10 +65,18 @@ export default function Tweetet({
         span {
           margin: 0 5px;
         }
-        date {
-          margin: auto;
+        time {
           color: #555;
           font-size: 14px;
+          margin-left: 350px;
+        }
+        a {
+          color: #555;
+          font-size: 14px;
+          text-decoration: none;
+        }
+        a:hover {
+          text-decoration: underline;
         }
       `}</style>
     </>
