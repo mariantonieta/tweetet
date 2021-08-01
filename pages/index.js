@@ -1,24 +1,23 @@
 import Head from "next/head"
 import { colors } from "styles/theme"
 import AppLayout from "components/AppLayout"
-import { loginWithGitHub, onAuthStateChanged } from "firebase/client"
+import { loginWithGitHub } from "firebase/client"
 import Button from "components/Button"
-import { useState, useEffect } from "react"
-import Avatar from "components/Avatar"
-
+import { useEffect } from "react"
+import { useRouter } from "next/router"
+import useUser, { USER_STATES } from "hooks/useUser"
 export default function Home() {
-  const [user, setUser] = useState(undefined)
-  useEffect(() => {
-    onAuthStateChanged(setUser)
-  }, [])
+  const router = useRouter()
+  const user = useUser()
   const handleClick = () => {
-    loginWithGitHub()
-      .then(setUser)
-      .catch((err) => {
-        console.log(err)
-      })
+    loginWithGitHub().catch((err) => {
+      console.log(err)
+    })
   }
 
+  useEffect(() => {
+    user && router.replace("/home")
+  }, [user])
   return (
     <div>
       <Head>
@@ -38,18 +37,12 @@ export default function Home() {
             with developers 👨‍💻
           </h2>
           <div>
-            {user === null && (
+            {user === USER_STATES.NOT_LOGGED && (
               <Button onClick={handleClick}>Login with GitHub</Button>
             )}
-            {user && user.avatar && (
+            {user === USER_STATES.NOT_KNOWN && (
               <div>
-                <Avatar
-                  alt={user.username}
-                  src={user.avatar}
-                  text={user.username}
-                />
-
-                <h5>Mariantonieta Chacon</h5>
+                <span>Loading...</span>
               </div>
             )}
           </div>
